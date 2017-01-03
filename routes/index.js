@@ -1,17 +1,60 @@
-var express = require('express');
-var router = express.Router();
+module.exports = function(app, passport){
+    // auth
+    app.get('/', function(req, res, next) {
+        res.render('index', {});
+    });
 
-// auth
-router.get('/', function(req, res, next) {
-  res.render('index', {});
-});
+    app.get('/login', function(req, res, next) {
+        res.render('login', { message: req.flash('loginMessage') });
+    });
 
-router.get('/login', function(req, res, next) {
-  res.render('login', {});
-});
+    app.get('/signup', function(req, res, next) {
+        res.render('signup', { message: req.flash('signupMessage') }  );
+    });
 
-router.get('/signup', function(req, res, next) {
-  res.render('signup', {});
-});
 
-module.exports = router;
+    // process the signup form
+    app.post('/signup', passport.authenticate('local-signup', {
+        successRedirect : '/profile', // redirect to the secure profile section
+        failureRedirect : '/signup', // redirect back to the signup page if there is an error
+        failureFlash : true // allow flash messages
+    }));
+
+    // process login
+    app.post('/login', passport.authenticate('local-login', {
+        successRedirect : '/profile', // redirect to the secure profile section
+        failureRedirect : '/login', // redirect back to the signup page if there is an error
+        failureFlash : true // allow flash messages
+    }));
+
+
+
+    // =====================================
+    // PROFILE SECTION =====================
+    // =====================================
+    app.get('/profile', isLoggedIn, function(req, res) {
+        res.render('profile', {
+            user : req.user // get the user out of session and pass to template
+        });
+    });
+
+
+    // =====================================
+    // LOGOUT ==============================
+    // =====================================
+    app.get('/logout', function(req, res) {
+        req.logout();
+        res.redirect('/');
+    });
+}
+
+
+// route middleware to make sure a user is logged in
+function isLoggedIn(req, res, next) {
+    // if user is authenticated in the session, carry on
+    if (req.isAuthenticated())
+        return next();
+
+    // if they aren't redirect them to the home page
+    res.redirect('/');
+}

@@ -18,22 +18,15 @@ module.exports = function(passport){
   // used to serialize the user for the session
   passport.serializeUser(function(user, done) {
     console.log('passport.serializeUser', user);
-    done(null, user.email);
+    done(null, user);
   });
 
   // used to deserialize the user
-  passport.deserializeUser(function(email, done) {
-    console.log('passport.deserializeUser', email);
+  passport.deserializeUser(function(user, done) {
+    console.log('passport.deserializeUser', user);
 
-    AuthResourceService.findLocalUser(email)
-      .then(function(user) {
-        if(user.length > 0){
-          console.log('found', email, user);
-          done(null, user[0]);
-        } else {
-          done('User not found...', null);
-        }
-      });
+    // TODO: add additional stuffs here to deserialize...
+    done(null, user);
   });
 
   // =========================================================================
@@ -93,7 +86,11 @@ module.exports = function(passport){
 
 
 
-  // google oauth
+
+
+  // =========================================================================
+  // GOOGLE OAUTH ============================================================
+  // =========================================================================
   passport.use(new GoogleStrategy({
       clientID: GOOGLE_CLIENT_ID,
       clientSecret: GOOGLE_CLIENT_SECRET,
@@ -101,9 +98,8 @@ module.exports = function(passport){
     },
     function(accessToken, refreshToken, profile, done) {
       AuthResourceService.createUserGmail(accessToken, refreshToken, profile)
-        .then(function(newUser){
-          // console.log('done',email, newUser)
-          return done(null, process.id);
+        .then(function(user){
+          return done(null, user);
         });
     }
   ));

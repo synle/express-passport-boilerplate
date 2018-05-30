@@ -1,9 +1,49 @@
 module.exports = function(app, passport){
-    // auth
+    // =====================================
+    // LANDING PAGE =====================
+    // =====================================
     app.get('/', function(req, res, next) {
         res.render('index', {});
     });
 
+
+    // =====================================
+    // GOOGLE LOGIN SECTION ================
+    // more details here.   ================
+    // https://github.com/jaredhanson/passport-google-oauth2
+    // =====================================
+    app.get('/login/google',
+        passport.authenticate(
+            'google',
+            {
+                // check this out for more scope related
+                // https://developers.google.com/identity/protocols/googlescopes
+                scope: [
+                    'profile', // always needed
+                    'email',
+                    'https://mail.google.com/',
+                    'https://www.googleapis.com/auth/contacts',
+                    'https://www.googleapis.com/auth/calendar',
+                    'https://www.googleapis.com/auth/drive',
+                ]
+            }
+        )
+    );
+
+    app.get('/login/google/callback',
+        passport.authenticate(
+            'google',
+            {
+                successRedirect : '/profile', // redirect to the secure profile section
+                failureRedirect : '/', // redirect back to the signup page if there is an error
+            }
+        )
+    );
+
+
+    // =====================================
+    // MANUAL SIGNUP SECTION =====================
+    // =====================================
     app.get('/login', function(req, res, next) {
         res.render('login', { message: req.flash('loginMessage') });
     });
@@ -19,6 +59,7 @@ module.exports = function(app, passport){
         failureRedirect : '/signup', // redirect back to the signup page if there is an error
         failureFlash : true // allow flash messages
     }));
+
 
     // process login
     app.post('/login', passport.authenticate('local-login', {

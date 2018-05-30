@@ -17,11 +17,10 @@
     "morgan": "^1.7.0",
     "node-sass-middleware": "0.9.8",
     "passport": "^0.3.2",
-    "passport-facebook": "^2.1.1",
-    "passport-google-oauth": "^1.0.0",
+    "passport-google-oauth20": "^1.0.0",
     "passport-local": "^1.0.0",
-    "passport-twitter": "^1.0.4",
     "sequelize": "^3.28.0",
+    "sequelize-simple-adapter": "^1.0.0",
     "serve-favicon": "~2.3.0",
     "sqlite3": "^3.1.8"
   }
